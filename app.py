@@ -205,16 +205,16 @@ st.markdown(
 st.divider()
 
 with st.sidebar:
-    st.header("📦 Load Repository")
+    st.header(" Load Repository")
 
     # ── Quick fill buttons ────────────────────────────────
     st.markdown("**Try these:**")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📁 Spoon-Knife", use_container_width=True):
+        if st.button("Spoon-Knife", use_container_width=True):
             st.session_state["prefill_url"] = "https://github.com/octocat/Spoon-Knife"
     with col2:
-        if st.button("📁 Flask", use_container_width=True):
+        if st.button("Flask", use_container_width=True):
             st.session_state["prefill_url"] = "https://github.com/pallets/flask"
 
     # ── URL input ─────────────────────────────────────────
@@ -228,7 +228,7 @@ with st.sidebar:
     # ── Load button ───────────────────────────────────────
     if github_url:
         if st.button(
-            "🚀 Load & Index",
+            "Load & Index",
             use_container_width=True,
             type="primary"
         ):
