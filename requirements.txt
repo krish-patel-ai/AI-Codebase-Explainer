@@ -10,4 +10,4 @@ sentence-transformers
 streamlit
 python-dotenv
 gitpython
-google-generativeai
+google-generativeaitorchvision
