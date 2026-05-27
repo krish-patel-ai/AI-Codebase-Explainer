@@ -204,27 +204,28 @@ st.markdown(
 )
 st.divider()
 
-# ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
     st.header("📦 Load Repository")
 
-    github_url = st.text_input(
+    # ── Quick fill buttons ────────────────────────────────
+    st.markdown("**Try these:**")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("📁 Spoon-Knife", use_container_width=True):
+            st.session_state["prefill_url"] = "https://github.com/octocat/Spoon-Knife"
+    with col2:
+        if st.button("📁 Flask", use_container_width=True):
+            st.session_state["prefill_url"] = "https://github.com/pallets/flask"
+
+    # ── URL input ─────────────────────────────────────────
+    default_url = st.session_state.get("prefill_url", "")
+    github_url  = st.text_input(
         "GitHub Repository URL",
+        value=default_url,
         placeholder="https://github.com/username/repo"
     )
 
-    st.markdown("**Try these:**")
-    if st.button("📁 Spoon-Knife (small)", use_container_width=True):
-        st.session_state["prefill_url"] = "https://github.com/octocat/Spoon-Knife"
-        st.rerun()
-
-    if st.button("📁 Flask (medium)", use_container_width=True):
-        st.session_state["prefill_url"] = "https://github.com/pallets/flask"
-        st.rerun()
-
-    if "prefill_url" in st.session_state:
-        github_url = st.session_state.pop("prefill_url")
-
+    # ── Load button ───────────────────────────────────────
     if github_url:
         if st.button(
             "🚀 Load & Index",
@@ -232,19 +233,20 @@ with st.sidebar:
             type="primary"
         ):
             try:
-                # Reset
-                st.session_state.messages  = []
-                st.session_state.history   = ChatMessageHistory()
-                st.session_state.indexed   = False
+                st.session_state.messages = []
+                st.session_state.history  = ChatMessageHistory()
+                st.session_state.indexed  = False
 
-                with st.spinner("Cloning repository..."):
+                with st.spinner("Step 1/3: Cloning repository..."):
                     clone_path, repo_name = clone_repo(github_url)
 
-                with st.spinner("Loading and indexing files..."):
+                with st.spinner("Step 2/3: Loading files..."):
                     all_docs = load_code_files(clone_path)
                     if not all_docs:
                         st.error("No readable files found!")
                         st.stop()
+
+                with st.spinner(f"Step 3/3: Indexing {len(all_docs)} files..."):
                     vectorstore, n_files, n_chunks = split_and_index(all_docs)
 
                 st.session_state.vectorstore = vectorstore
@@ -254,14 +256,17 @@ with st.sidebar:
                     "files" : n_files,
                     "chunks": n_chunks
                 }
-                st.success(f"✅ Ready!")
+                # Clear prefill after successful load
+                if "prefill_url" in st.session_state:
+                    del st.session_state["prefill_url"]
+                st.success("✅ Ready!")
 
             except Exception as e:
                 st.error(f"Error: {str(e)}")
 
     if st.session_state.indexed:
         st.divider()
-        st.metric("Files", st.session_state.stats["files"])
+        st.metric("Files",  st.session_state.stats["files"])
         st.metric("Chunks", st.session_state.stats["chunks"])
         st.markdown(f"**Repo:** {st.session_state.repo_name}")
 
@@ -270,6 +275,8 @@ with st.sidebar:
             st.session_state.indexed     = False
             st.session_state.messages    = []
             st.session_state.history     = ChatMessageHistory()
+            if "prefill_url" in st.session_state:
+                del st.session_state["prefill_url"]
             st.rerun()
 
 # ── Main area ─────────────────────────────────────────────
