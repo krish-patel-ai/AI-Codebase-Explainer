@@ -1,0 +1,7 @@
+.env
+cloned_repos/
+codebase_db/
+__pycache__/
+*.pyc
+.DS_Store
+*.ipynb
