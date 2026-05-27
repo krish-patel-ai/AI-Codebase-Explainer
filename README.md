@@ -42,3 +42,6 @@ pinned: false
 - Understand a new codebase in minutes
 - Onboard to a new company faster
 - Explore open source projects instantly
+
+## 🔗 Connect
+👤 [LinkedIn](https://www.linkedin.com/in/krish-patel-4951713b3/)
